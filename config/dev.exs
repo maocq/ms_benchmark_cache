@@ -24,3 +24,10 @@ config :ex_aws,
 
 config :logger,
   level: :debug
+
+config :fua,
+  redis_host: "localhost",
+  redis_port: "6379"
+
+config :fua,
+  user_cache_redis: Fua.DrivenAdapters.RedisUserCache

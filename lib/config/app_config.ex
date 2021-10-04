@@ -8,6 +8,8 @@ defmodule Fua.Config.AppConfig do
     :region,
     :token_exp,
     :version,
+    :redis_host,
+    :redis_port
   ]
 
   def load_config do
@@ -20,6 +22,8 @@ defmodule Fua.Config.AppConfig do
       region: load(:region),
       token_exp: load(:token_exp),
       version: load(:version),
+      redis_host: load(:redis_host),
+      redis_port: load(:redis_port)
     }
   end
 

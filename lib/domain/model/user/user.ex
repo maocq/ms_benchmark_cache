@@ -1,4 +1,6 @@
 defmodule Fua.Model.User do
+  @derive [Poison.Encoder]
+
   defstruct [
     :id,
     :name

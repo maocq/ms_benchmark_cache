@@ -1,4 +1,4 @@
-defmodule Fua.UseCase.UserTestDynamodb do
+defmodule Fua.UseCase.UserDynamodb do
   alias Fua.Model.User
 
   def set(%User{} = user) do

@@ -5,6 +5,8 @@ defmodule Fua.Application do
   alias Fua.Config.{AppConfig, ConfigHolder}
   alias Fua.EntryPoint.Client.ClientController
   alias Fua.Helpers.CustomTelemetry
+  alias Fua.DrivenAdapters.Redis.Redis
+  alias Fua.DrivenAdapters.Secrets.SecretManagerAdapter
 
   use Application
   require Logger
@@ -47,9 +49,9 @@ defmodule Fua.Application do
     do: [
       {ConfigHolder, AppConfig.load_config()},
       {TelemetryMetricsPrometheus, [metrics: CustomTelemetry.metrics()]},
-      #{SecretManagerAdapter, []},
+      {SecretManagerAdapter, []},
       #{Repo, []},
-      #{Redis, []},
+      {Redis, []},
       #{RabbitMQ, []},
       #{Fua.Adapters.Repositories.ConsumerEtsManager, []},
       #{Fua.Adapters.Repositories.DelegateSessionEtsManager, []}
