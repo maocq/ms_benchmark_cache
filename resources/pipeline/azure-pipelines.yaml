@@ -1,0 +1,114 @@
+name: $(Build.SourceBranchName).$(date:yyyyMMdd)$(rev:.r)
+
+variables:
+  - group: "Artifactory"
+  - name: artifactory.RepositoryPath
+    value: "build-AW1291_CFK"
+  - name: componentName
+    value: "ms_benchmark_cache"
+  - name: applicationName
+    value: "fua"
+  - name: directoryPath
+    value: "ms_benchmark_cache"
+
+resources:
+  - repo: self
+
+trigger:
+  branches:
+    include:
+      - trunk
+      - feature/*
+  paths:
+    include:
+      - ms_benchmark_cache/*
+
+stages:
+  - stage: pipeline_build
+    displayName: "Build"
+    jobs:
+      - job: Build
+        pool:
+          name: Build
+          demands:
+            - Agent.OS -equals Linux
+        steps:
+
+          - task: SonarQubePrepare@4
+            displayName: "Prepare analysis on SonarQube"
+            inputs:
+              SonarQube: SonarQube
+              scannerMode: CLI
+              configMode: manual
+              cliProjectKey: "$(Build.Repository.Name)_$(componentName)"
+              cliProjectName: "$(Build.Repository.Name)_$(componentName)"
+              cliProjectVersion: "$(Build.BuildNumber)"
+              extraProperties: |
+                sonar.sources=$(directoryPath)/
+                sonar.exclusions=**/_build
+                sonar.externalIssuesReportPaths=$(directoryPath)/credo_sonarqube.json  
+
+          - task: Bash@3
+            displayName: "Build and test"
+            inputs:
+              targetType: "inline"
+              script: |
+                cd $(directoryPath)
+                mkdir ./cover
+                mix local.hex --force
+                mix local.rebar --force
+                mix deps.clean --unused
+                mix deps.get
+                mix deps.compile --force
+                MIX_ENV=test mix test --cover
+
+          - task: Bash@3
+            displayName: "Static code analysis"
+            inputs:
+              targetType: "inline"
+              script: |
+                cd $(directoryPath)
+                mix credo --sonarqube-base-folder "$(directoryPath)/" --sonarqube-file credo_sonarqube.json --mute-exit-status
+                mix sobelow
+
+          - task: SonarQubeAnalyze@4
+            displayName: "Run Code Analysis"
+
+          - task: Sonar-buildbreaker@8
+            displayName: "Break Build on Quality Gate Failure"
+            inputs:
+              SonarQube: SonarQube
+
+          - task: PublishTestResults@2
+            displayName: "Publish Test Results"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "*.xml"
+              searchFolder: "$(System.DefaultWorkingDirectory)/$(directoryPath)/_build/test/lib/$(applicationName)/"
+              mergeTestResults: true
+
+          - task: Bash@3
+            displayName: "Remove Files"
+            inputs:
+              targetType: "inline"
+              script: |
+                cd $(directoryPath)
+                rm -rf *.md azure-pipelines.yaml .git .gitignore test deps cover _build
+
+          - task: ArchiveFiles@2
+            displayName: "Archive Files"
+            inputs:
+              rootFolderOrFile: "$(System.DefaultWorkingDirectory)/$(directoryPath)"
+              includeRootFolder: false
+              archiveType: tar
+              tarCompression: gz
+              archiveFile: "$(Build.BuildNumber).tar.gz"
+              replaceExistingArchive: true
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Artifact: $(componentName)"
+            inputs:
+              PathtoPublish: "$(Build.BuildNumber).tar.gz"
+              ArtifactName: $(componentName)
+              #condition: and(succeeded(), eq(variables['Build.SourceBranch'],'refs/heads/trunk'))
+
