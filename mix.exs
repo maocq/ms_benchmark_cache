@@ -26,6 +26,7 @@ defmodule MsControllerFk.MixProject do
       {:postgrex, "~> 0.15.0"},
       {:uuid, "~> 1.1"},
       {:ex_aws, "~> 2.1"},
+      {:ex_aws_dynamo, "~> 4.0"},
       {:ex_aws_sts, "~> 2.0"},
       {:ex_aws_secretsmanager, "~> 2.0"},
       {:hackney, "~> 1.9"},

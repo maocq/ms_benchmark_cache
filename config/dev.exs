@@ -22,6 +22,12 @@ config :ex_aws,
     :instance_role
   ]
 
+config :ex_aws, :dynamodb,
+       scheme: "http://",
+       host: "localhost",
+       port: 8000,
+       region: "us-east-1"
+
 config :logger,
   level: :debug
 
@@ -30,4 +36,5 @@ config :fua,
   redis_port: "6379"
 
 config :fua,
-  user_cache_redis: Fua.DrivenAdapters.RedisUserCache
+  user_cache_redis: Fua.DrivenAdapters.RedisUserCache,
+  user_cache_dynamodb: Fua.DrivenAdapters.DynamodbUserCache

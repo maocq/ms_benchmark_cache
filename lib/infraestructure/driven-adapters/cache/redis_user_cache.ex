@@ -4,6 +4,8 @@ defmodule Fua.DrivenAdapters.RedisUserCache do
 
   @behaviour Fua.Domain.Behaviour.UserCache
 
+  @expiration_time_seconds 900
+
   @spec get(String.t()) :: {:ok, User.t()} | {:ok, nil}
   def get(id) do
     with {:ok, json} when not is_nil(json) <- Redix.command(:redix, ["GET", id]),
@@ -13,7 +15,7 @@ defmodule Fua.DrivenAdapters.RedisUserCache do
   @spec set(User.t()) :: {:ok, User.t()}
   def set(user) do
     with {:ok, json} <- Poison.encode(user),
-         {:ok, "OK"} <- Redix.command(:redix, ["SETEX", user.id, 60, json]) do
+         {:ok, "OK"} <- Redix.command(:redix, ["SETEX", user.id, @expiration_time_seconds, json]) do
       {:ok, user}
     end
   end

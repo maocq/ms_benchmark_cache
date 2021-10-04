@@ -26,6 +26,7 @@ defmodule Fua.EntryPoint.Client.ClientController do
     |> build_response(conn)
   end
 
+  # Redis
   get "/user/get/redis" do
     id = conn.params["id"] || "0"
 
@@ -42,12 +43,23 @@ defmodule Fua.EntryPoint.Client.ClientController do
     else error -> handle_error(error, conn) end
   end
 
-
+  # Dynamodb
   get "/user/get/dynamodb" do
-    with {:ok, response} <- UserDynamodbUseCase.get("123") do
+    id = conn.params["id"] || "0"
+
+    with {:ok, response} <- UserDynamodbUseCase.get(id) do
       build_response(%{status: 200, body: response}, conn)
     else error -> handle_error(error, conn) end
   end
+
+  get "/user/set/dynamodb" do
+    id = conn.params["id"] || UUID.uuid1
+
+    with {:ok, response} <- UserDynamodbUseCase.set(%User{id: id, name: "Test"}) do
+      build_response(%{status: 200, body: response}, conn)
+    else error -> handle_error(error, conn) end
+  end
+
 
   match _ do
     %{request_path: path} = conn
@@ -69,14 +81,13 @@ defmodule Fua.EntryPoint.Client.ClientController do
     build_response(%{status: 409, body: %{status: 409, error: e}}, conn)
   end
 
-  defp _handle_error(error, conn) do
+  def _handle_error(error, conn) do
     Logger.error("Unexpected error #{inspect(error)}}")
     build_response(%{status: 500, body: %{status: 500, error: "Error"}}, conn)
   end
 
-
   @impl Plug.ErrorHandler
-  defp handle_errors(conn, %{} = error) do
+  def handle_errors(conn, %{} = error) do
     Logger.error("Internal server - #{inspect(error)}}")
 
     build_response(%{status: 500, body: %{status: 500, error: "Internal server"}}, conn)
