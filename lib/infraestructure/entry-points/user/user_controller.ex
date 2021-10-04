@@ -81,15 +81,14 @@ defmodule Fua.EntryPoint.Client.ClientController do
     build_response(%{status: 409, body: %{status: 409, error: e}}, conn)
   end
 
-  def _handle_error(error, conn) do
+  defp _handle_error(error, conn) do
     Logger.error("Unexpected error #{inspect(error)}}")
     build_response(%{status: 500, body: %{status: 500, error: "Error"}}, conn)
   end
 
   @impl Plug.ErrorHandler
-  def handle_errors(conn, %{} = error) do
+  defp handle_errors(conn, %{} = error) do
     Logger.error("Internal server - #{inspect(error)}}")
-
     build_response(%{status: 500, body: %{status: 500, error: "Internal server"}}, conn)
   end
 
