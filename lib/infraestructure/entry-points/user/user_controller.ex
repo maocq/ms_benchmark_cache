@@ -5,8 +5,9 @@ defmodule Fua.EntryPoint.Client.ClientController do
   require Logger
 
   alias Fua.Model.Error
-  alias Fua.UseCase.UserDynamodb
-  alias Fua.UseCase.UserRedis
+  alias Fua.Model.User
+  alias Fua.UseCase.UserDynamodbUseCase
+  alias Fua.UseCase.UserRedisUseCase
 
   plug(CORSPlug,
     methods: ["GET", "POST"],
@@ -26,13 +27,24 @@ defmodule Fua.EntryPoint.Client.ClientController do
   end
 
   get "/user/get/redis" do
-    with {:ok, response} <- UserRedis.get("123") do
+    id = conn.params["id"] || "0"
+
+    with {:ok, response} <- UserRedisUseCase.get(id) do
       build_response(%{status: 200, body: response}, conn)
     else error -> handle_error(error, conn) end
   end
 
+  get "/user/set/redis" do
+    id = conn.params["id"] || UUID.uuid1
+
+    with {:ok, response} <- UserRedisUseCase.set(%User{id: id, name: "Test"}) do
+      build_response(%{status: 200, body: response}, conn)
+    else error -> handle_error(error, conn) end
+  end
+
+
   get "/user/get/dynamodb" do
-    with {:ok, response} <- UserDynamodb.get("123") do
+    with {:ok, response} <- UserDynamodbUseCase.get("123") do
       build_response(%{status: 200, body: response}, conn)
     else error -> handle_error(error, conn) end
   end
@@ -52,11 +64,15 @@ defmodule Fua.EntryPoint.Client.ClientController do
      do: build_response(%{status: 200, body: response}, conn)
 
 
-  defp handle_error({:error, %Error{} = e}, conn),
-     do: build_response(%{status: 409, body: %{status: 409, error: e}}, conn)
+  defp handle_error({:error, %Error{} = e}, conn) do
+    Logger.error("Error #{inspect(e)}}")
+    build_response(%{status: 409, body: %{status: 409, error: e}}, conn)
+  end
 
-  defp handle_error(error, conn),
-     do: build_response(%{status: 500, body: %{status: 500, error: "Error"}}, conn)
+  defp _handle_error(error, conn) do
+    Logger.error("Unexpected error #{inspect(error)}}")
+    build_response(%{status: 500, body: %{status: 500, error: "Error"}}, conn)
+  end
 
 
   @impl Plug.ErrorHandler
