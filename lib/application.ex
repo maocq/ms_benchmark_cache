@@ -3,7 +3,7 @@ defmodule Fua.Application do
   Documentation for `MsControllerFk`.
   """
   alias Fua.Config.{AppConfig, ConfigHolder}
-  alias Fua.EntryPoint.Client.ClientController
+  alias Fua.EntryPoint.User.UserController
   alias Fua.Helpers.CustomTelemetry
   alias Fua.DrivenAdapters.Redis.Redis
   alias Fua.DrivenAdapters.Secrets.SecretManagerAdapter
@@ -30,7 +30,7 @@ defmodule Fua.Application do
       {
         Plug.Cowboy,
         scheme: :http,
-        plug: ClientController,
+        plug: UserController,
         options: [
           port: port
         ]

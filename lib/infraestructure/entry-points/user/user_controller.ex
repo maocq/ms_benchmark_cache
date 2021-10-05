@@ -1,4 +1,4 @@
-defmodule Fua.EntryPoint.Client.ClientController do
+defmodule Fua.EntryPoint.User.UserController do
   use Plug.Router
   use Plug.ErrorHandler
 
