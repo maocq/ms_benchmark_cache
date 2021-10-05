@@ -1,6 +1,5 @@
 defmodule Fua.DrivenAdapters.RedisUserCache do
   alias Fua.Model.User
-  alias Fua.Model.Error
 
   @behaviour Fua.Domain.Behaviour.UserCache
 
