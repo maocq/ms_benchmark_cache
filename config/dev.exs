@@ -29,7 +29,7 @@ config :ex_aws, :dynamodb,
        region: "us-east-1"
 
 config :logger,
-  level: :debug
+  level: :info
 
 config :fua,
   redis_host: "localhost",
