@@ -41,7 +41,7 @@ Costo estimado $24.48/mes
 
 Costo estimado $5.76/mes (Sin tener en cuenta el pago inicial)
 
-Nota: La configuración de Redis soporta aun mas carga pero con el fin de facilitarla comparación se usan los mismos valores de carga usados para Dynamodb
+Nota: La configuración de Redis soporta aun mas carga pero con el fin de facilitar la comparación se usan los mismos valores de carga usados para Dynamodb
 
 ### Resultados
 ![Get cache](results/get-cache.png)
