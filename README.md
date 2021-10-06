@@ -1,21 +1,56 @@
 # MsBenchmarkCache
 
-**TODO: Add description**
-
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `ms_benchmark_cache` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:ms_benchmark_cache, "~> 0.1.0"}
-  ]
-end
+### Configuración de la prueba
+```
+execution: %{
+ steps: 5,
+ increment: 10,
+ duration: 5000,
+ constant_load: false
+}
 ```
 
-Dynamodb
+### Configuración Dynamodb
+
+(Unidades de capacidad aprovisionadas)
+- Capacidad de lectura: 90 
+- Capacidad de escritura: 90
+
+Nota: Usar una configuración menor en unidades de aprovisionamiento genera la siguiente excepción:
+```
+{:error, {"ProvisionedThroughputExceededException", "The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API."}}
+```
+
+#### Costo
+Costo estimado $52.23/mes
+
+### Configuración Redis
+Tipo de nodo: cache.t2.small
+
+#### Nodos bajo demanda
+|Nodos de caché estándar – Generación actual | Precio por hora |
+|--------------------------------------------|-----------------|
+|cache.t2.small                              | 0,034 USD       |
+
+Costo estimado $24.48/mes
+
+#### Nodos reservados de utilización intensa
+|Standard                | Pago inicial | Por hora |
+|------------------------|--------------|----------|
+|cache.t2.small          | 218,00 USD   | 0,008 USD|
+
+Costo estimado $5.76/mes (Sin tener en cuenta el pago inicial)
+
+Nota: La configuración de Redis soporta aun mas carga pero con el fin de facilitarla comparación se usan los mismos valores de carga usados para Dynamodb
+
+### Resultados
+![Get cache](results/get-cache.png)
+![Get cache](results/set-cache.png)
+
+
+![Example 1 - Throughput](https://github.com/bancolombia/distributed-performance-analyzer/blob/documentation-improves/assets/dresults_example1.png)
+
+Configuración Dynamodb
 ```
 aws dynamodb delete-table --table-name cache --endpoint-url http://localhost:8000
 
@@ -32,12 +67,8 @@ aws dynamodb create-table \
 
 aws dynamodb update-time-to-live --table-name cache --time-to-live-specification "Enabled=true, AttributeName=expiration" --endpoint-url http://localhost:8000
 
-
-
 aws dynamodb list-tables --endpoint-url http://localhost:8000
-
 aws dynamodb describe-table --table-name cache --endpoint-url http://localhost:8000
-
 
 
 EXP=`date -d '+120 seconds' +%s`
@@ -46,7 +77,6 @@ aws dynamodb put-item \
     --item \
     '{"key": {"S": "1"}, "expiration": {"N": "'$EXP'"}, "Value": {"S": "Hello"}}' \
     --endpoint-url http://localhost:8000
-
 
 aws dynamodb get-item --consistent-read \
     --table-name cache \
