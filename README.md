@@ -48,8 +48,6 @@ Nota: La configuración de Redis soporta aun mas carga pero con el fin de facili
 ![Get cache](results/set-cache.png)
 
 
-![Example 1 - Throughput](https://github.com/bancolombia/distributed-performance-analyzer/blob/documentation-improves/assets/dresults_example1.png)
-
 Configuración Dynamodb
 ```
 aws dynamodb delete-table --table-name cache --endpoint-url http://localhost:8000
