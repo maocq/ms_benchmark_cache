@@ -26,6 +26,19 @@ Nota: Usar una configuración menor en unidades de aprovisionamiento genera la s
 #### Costo
 Costo estimado $52.23/mes
 
+#### Modo de capacidad - Bajo demanda
+
+| Tipo de cargo                        | Precio                          |
+|--------------------------------------|---------------------------------|
+| Unidades de solicitud de escritura   | 1,25 USD por millón de unidades |
+| Unidades de solicitud de lectura	   | 0,25 USD por millón de unidades |
+
+
+- Costo estimado lectura 250 USD (1.000 millones de solicudes de lectura)
+- Costo estimado escritura 625 USD (500 millones de solicitudes de escritura)
+
+> El rendimiento es similar tanto en modelo de capacidad bajo demanda o bajo aprovisionamiento
+
 ### Configuración Redis
 Tipo de nodo: cache.t2.small
 
