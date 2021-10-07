@@ -1,6 +1,8 @@
 # MsBenchmarkCache
 
 ### Configuración de la prueba
+
+- Pruebas realizada con: [Performance Analyzer](https://github.com/bancolombia/distributed-performance-analyzer).  
 ```
 execution: %{
  steps: 5,
