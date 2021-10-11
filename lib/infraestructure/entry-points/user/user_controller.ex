@@ -43,6 +43,32 @@ defmodule Fua.EntryPoint.User.UserController do
     else error -> handle_error(error, conn) end
   end
 
+  get "/user/get-set/redis" do
+    id = conn.params["id"] || UUID.uuid1
+
+    with {:ok, response} <- UserRedisUseCase.get_set(%User{id: id, name: "Test"}) do
+      build_response(%{status: 200, body: response}, conn)
+    else error -> handle_error(error, conn) end
+  end
+
+
+  get "/user/get-set-process/redis" do
+    id = conn.params["id"] || UUID.uuid1
+
+    with {:ok, response} <- UserRedisUseCase.get_set_process(%User{id: id, name: "Test"}) do
+      build_response(%{status: 200, body: response}, conn)
+    else error -> handle_error(error, conn) end
+  end
+
+
+  get "/user/get-set-cast/redis" do
+    id = conn.params["id"] || UUID.uuid1
+
+    with {:ok, response} <- UserRedisUseCase.get_set_cast(%User{id: id, name: "Test"}) do
+      build_response(%{status: 200, body: response}, conn)
+    else error -> handle_error(error, conn) end
+  end
+
   # Dynamodb
   get "/user/get/dynamodb" do
     id = conn.params["id"] || "0"

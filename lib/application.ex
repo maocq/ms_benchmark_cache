@@ -7,6 +7,7 @@ defmodule Fua.Application do
   alias Fua.Helpers.CustomTelemetry
   alias Fua.DrivenAdapters.Redis.Redis
   alias Fua.DrivenAdapters.Secrets.SecretManagerAdapter
+  alias Fua.Model.CastServer
 
   use Application
   require Logger
@@ -52,6 +53,7 @@ defmodule Fua.Application do
       {SecretManagerAdapter, []},
       #{Repo, []},
       {Redis, []},
+      {CastServer, []}
       #{RabbitMQ, []},
       #{Fua.Adapters.Repositories.ConsumerEtsManager, []},
       #{Fua.Adapters.Repositories.DelegateSessionEtsManager, []}
